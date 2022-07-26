@@ -7,13 +7,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>
     (opt => opt.UseSqlServer(builder.Configuration["SQLDbConnection"]));
 
+//add repo to DI
+builder.Services.AddScoped<IPokemonRepo, SQLPokemonRepo>();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapGet("api/v1/pokemon", async (AppDbContext context) =>
+app.MapGet("api/v1/pokemon", async (IPokemonRepo repo) =>
 {
-    var pokemon = await context.Pokemon.ToListAsync();
+    var pokemon = await repo.GetAllPokemonAsync();
 
     return Results.Ok(pokemon);
 });
