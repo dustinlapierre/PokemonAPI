@@ -21,4 +21,13 @@ app.MapGet("api/v1/pokemon", async (IPokemonRepo repo) =>
     return Results.Ok(pokemon);
 });
 
+app.MapGet("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id) =>
+{
+    var pokemon = await repo.GetPokemonAsync(id);
+    if (pokemon == null)
+        return Results.NotFound();
+
+    return Results.Ok(pokemon);
+});
+
 app.Run();

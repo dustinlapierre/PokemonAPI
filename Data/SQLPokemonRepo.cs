@@ -14,5 +14,10 @@ namespace PokemonAPI.Data
         {
             return await _context.Pokemon.ToListAsync();
         }
+
+        public async Task<Pokemon> GetPokemonAsync(int id)
+        {
+            return await _context.Pokemon.FindAsync(id);
+        }
     }
 }
