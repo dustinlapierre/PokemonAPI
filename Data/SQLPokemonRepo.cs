@@ -26,5 +26,11 @@ namespace PokemonAPI.Data
         {
             return await _context.Pokemon.FindAsync(id);
         }
+
+        public async Task UpdatePokemonAsync(int id, Pokemon pokemon)
+        {
+            //with entity Framework the model should have already been updated, and just need to be saved
+            await _context.SaveChangesAsync();
+        }
     }
 }
