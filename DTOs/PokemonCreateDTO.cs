@@ -2,13 +2,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PokemonAPI.DTOs
 {
-    public class PokemonDTO
+    //DTO used when creating data
+    public class PokemonCreateDTO
     {
-        [Key]
-        public int Id { get; set; }
         [Required]
         public string? Name { get; set; }
         [Required]
         public int PokedexNumber { get; set; }
+        [Required]
+        public string? Generation { get; set; }
     }
 }

@@ -9,7 +9,8 @@ namespace PokemonAPI.Profiles
         public PokemonProfile()
         {
             // Source -> Destination
-            CreateMap<Pokemon, PokemonDTO>();
+            CreateMap<Pokemon, PokemonReadDTO>();
+            CreateMap<PokemonCreateDTO, Pokemon>();
         }
     }
 }

@@ -23,7 +23,7 @@ app.MapGet("api/v1/pokemon", async (IPokemonRepo repo, IMapper mapper) =>
 {
     var pokemon = await repo.GetAllPokemonAsync();
 
-    return Results.Ok(mapper.Map<List<PokemonDTO>>(pokemon));
+    return Results.Ok(mapper.Map<List<PokemonReadDTO>>(pokemon));
 });
 
 app.MapGet("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id, IMapper mapper) =>
@@ -33,15 +33,16 @@ app.MapGet("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id, IMapper mapp
         return Results.NotFound();
 
     //DTO mapping Map<Destination Type>(Source Object)
-    var pokemonDTO = mapper.Map<PokemonDTO>(pokemonModel);
+    var pokemonDTO = mapper.Map<PokemonReadDTO>(pokemonModel);
 
     return Results.Ok(pokemonDTO);
 });
 
-app.MapPost("api/v1/pokemon", async (IPokemonRepo repo, Pokemon pokemon) =>
+app.MapPost("api/v1/pokemon", async (IPokemonRepo repo, PokemonCreateDTO pokemonCreateDTO, IMapper mapper) =>
 {
-    await repo.CreatePokemonAsync(pokemon);
-    return Results.Created($"api/v1/pokemon/{pokemon.Id}", pokemon);
+    var pokemonModel = mapper.Map<Pokemon>(pokemonCreateDTO);
+    await repo.CreatePokemonAsync(pokemonModel);
+    return Results.Created($"api/v1/pokemon/{pokemonModel.Id}", mapper.Map<PokemonReadDTO>(pokemonModel));
 });
 
 //id of resource to update, object holding the update data
