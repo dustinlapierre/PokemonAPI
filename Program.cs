@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PokemonAPI.Data;
 using PokemonAPI.Models;
+using PokemonAPI.DTOs;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,25 +12,30 @@ builder.Services.AddDbContext<AppDbContext>
 
 //add repo to DI
 builder.Services.AddScoped<IPokemonRepo, SQLPokemonRepo>();
+//add automapper to DI
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapGet("api/v1/pokemon", async (IPokemonRepo repo) =>
+app.MapGet("api/v1/pokemon", async (IPokemonRepo repo, IMapper mapper) =>
 {
     var pokemon = await repo.GetAllPokemonAsync();
 
-    return Results.Ok(pokemon);
+    return Results.Ok(mapper.Map<List<PokemonDTO>>(pokemon));
 });
 
-app.MapGet("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id) =>
+app.MapGet("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id, IMapper mapper) =>
 {
-    var pokemon = await repo.GetPokemonAsync(id);
-    if (pokemon == null)
+    var pokemonModel = await repo.GetPokemonAsync(id);
+    if (pokemonModel == null)
         return Results.NotFound();
 
-    return Results.Ok(pokemon);
+    //DTO mapping Map<Destination Type>(Source Object)
+    var pokemonDTO = mapper.Map<PokemonDTO>(pokemonModel);
+
+    return Results.Ok(pokemonDTO);
 });
 
 app.MapPost("api/v1/pokemon", async (IPokemonRepo repo, Pokemon pokemon) =>
