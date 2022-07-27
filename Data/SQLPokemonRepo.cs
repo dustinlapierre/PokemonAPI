@@ -17,6 +17,12 @@ namespace PokemonAPI.Data
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeletePokemonAsync(Pokemon pokemon)
+        {
+            _context.Pokemon.Remove(pokemon);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<List<Pokemon>> GetAllPokemonAsync()
         {
             return await _context.Pokemon.ToListAsync();

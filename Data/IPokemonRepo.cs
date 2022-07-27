@@ -8,5 +8,6 @@ namespace PokemonAPI.Data
         Task<Pokemon?> GetPokemonAsync(int id);
         Task CreatePokemonAsync(Pokemon pokemon);
         Task UpdatePokemonAsync(int id, Pokemon pokemon);
+        Task DeletePokemonAsync(Pokemon pokemon);
     }
 }

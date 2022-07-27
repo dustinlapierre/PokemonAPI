@@ -52,4 +52,14 @@ app.MapPut("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id, Pokemon poke
     return Results.NoContent();
 });
 
+app.MapDelete("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id) =>
+{
+    var pokemonModel = await repo.GetPokemonAsync(id);
+    if (pokemonModel == null)
+        return Results.NotFound();
+
+    await repo.DeletePokemonAsync(pokemonModel);
+    return Results.NoContent();
+});
+
 app.Run();
