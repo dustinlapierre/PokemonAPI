@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PokemonAPI.Data;
+using PokemonAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,12 @@ app.MapGet("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id) =>
         return Results.NotFound();
 
     return Results.Ok(pokemon);
+});
+
+app.MapPost("api/v1/pokemon", async (IPokemonRepo repo, Pokemon pokemon) =>
+{
+    await repo.CreatePokemonAsync(pokemon);
+    return Results.Created($"api/v1/pokemon/{pokemon.Id}", pokemon);
 });
 
 app.Run();
