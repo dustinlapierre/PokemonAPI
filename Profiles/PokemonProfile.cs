@@ -11,6 +11,7 @@ namespace PokemonAPI.Profiles
             // Source -> Destination
             CreateMap<Pokemon, PokemonReadDTO>();
             CreateMap<PokemonCreateDTO, Pokemon>();
+            CreateMap<PokemonUpdateDTO, Pokemon>();
         }
     }
 }

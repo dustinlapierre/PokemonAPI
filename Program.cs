@@ -46,15 +46,13 @@ app.MapPost("api/v1/pokemon", async (IPokemonRepo repo, PokemonCreateDTO pokemon
 });
 
 //id of resource to update, object holding the update data
-app.MapPut("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id, Pokemon pokemon) =>
+app.MapPut("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id, PokemonUpdateDTO pokemonUpdateDTO, IMapper mapper) =>
 {
     var pokemonModel = await repo.GetPokemonAsync(id);
     if (pokemonModel == null)
         return Results.NotFound();
 
-    pokemonModel.Name = pokemon.Name;
-    pokemonModel.PokedexNumber = pokemon.PokedexNumber;
-    pokemonModel.Generation = pokemon.Generation;
+    mapper.Map(pokemonUpdateDTO, pokemonModel);
 
     await repo.UpdatePokemonAsync(id, pokemonModel);
     return Results.NoContent();
