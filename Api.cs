@@ -9,12 +9,7 @@ public static class Api
 {
     public static void ConfigureApi(this WebApplication app)
     {
-        app.MapGet("api/v1/pokemon", async (IPokemonRepo repo, IMapper mapper) =>
-        {
-            var pokemon = await repo.GetAllPokemonAsync();
-
-            return Results.Ok(mapper.Map<List<PokemonReadDTO>>(pokemon));
-        });
+        app.MapGet("api/v1/pokemon", GetAllPokemon);
 
         app.MapGet("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id, IMapper mapper) =>
         {
@@ -57,5 +52,19 @@ public static class Api
             await repo.DeletePokemonAsync(pokemonModel);
             return Results.NoContent();
         });
+    }
+
+    public static async Task<IResult> GetAllPokemon(IPokemonRepo repo, IMapper mapper)
+    {
+        try
+        {
+            var pokemon = await repo.GetAllPokemonAsync();
+
+            return Results.Ok(mapper.Map<List<PokemonReadDTO>>(pokemon));
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(e.Message);
+        }
     }
 }
