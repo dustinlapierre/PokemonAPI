@@ -17,6 +17,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+//map endpoints
 app.ConfigureApi();
 
 app.Run();

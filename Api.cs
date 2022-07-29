@@ -10,18 +10,7 @@ public static class Api
     public static void ConfigureApi(this WebApplication app)
     {
         app.MapGet("api/v1/pokemon", GetAllPokemon);
-
-        app.MapGet("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id, IMapper mapper) =>
-        {
-            var pokemonModel = await repo.GetPokemonAsync(id);
-            if (pokemonModel == null)
-                return Results.NotFound();
-
-            //DTO mapping Map<Destination Type>(Source Object)
-            var pokemonDTO = mapper.Map<PokemonReadDTO>(pokemonModel);
-
-            return Results.Ok(pokemonDTO);
-        });
+        app.MapGet("api/v1/pokemon/{id}", GetPokemon);
 
         app.MapPost("api/v1/pokemon", async (IPokemonRepo repo, PokemonCreateDTO pokemonCreateDTO, IMapper mapper) =>
         {
@@ -61,6 +50,25 @@ public static class Api
             var pokemon = await repo.GetAllPokemonAsync();
 
             return Results.Ok(mapper.Map<List<PokemonReadDTO>>(pokemon));
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(e.Message);
+        }
+    }
+
+    public static async Task<IResult> GetPokemon(IPokemonRepo repo, int id, IMapper mapper)
+    {
+        try
+        {
+            var pokemonModel = await repo.GetPokemonAsync(id);
+            if (pokemonModel == null)
+                return Results.NotFound();
+
+            //DTO mapping Map<Destination Type>(Source Object)
+            var pokemonDTO = mapper.Map<PokemonReadDTO>(pokemonModel);
+
+            return Results.Ok(pokemonDTO);
         }
         catch (Exception e)
         {
