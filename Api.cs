@@ -9,38 +9,18 @@ public static class Api
 {
     public static void ConfigureApi(this WebApplication app)
     {
+        //GET
         app.MapGet("api/v1/pokemon", GetAllPokemon);
         app.MapGet("api/v1/pokemon/{id}", GetPokemon);
 
-        app.MapPost("api/v1/pokemon", async (IPokemonRepo repo, PokemonCreateDTO pokemonCreateDTO, IMapper mapper) =>
-        {
-            var pokemonModel = mapper.Map<Pokemon>(pokemonCreateDTO);
-            await repo.CreatePokemonAsync(pokemonModel);
-            return Results.Created($"api/v1/pokemon/{pokemonModel.Id}", mapper.Map<PokemonReadDTO>(pokemonModel));
-        });
+        //POST
+        app.MapPost("api/v1/pokemon", CreatePokemon);
 
-        //id of resource to update, object holding the update data
-        app.MapPut("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id, PokemonUpdateDTO pokemonUpdateDTO, IMapper mapper) =>
-        {
-            var pokemonModel = await repo.GetPokemonAsync(id);
-            if (pokemonModel == null)
-                return Results.NotFound();
+        //PUT
+        app.MapPut("api/v1/pokemon/{id}", UpdatePokemon);
 
-            mapper.Map(pokemonUpdateDTO, pokemonModel);
-
-            await repo.UpdatePokemonAsync(id, pokemonModel);
-            return Results.NoContent();
-        });
-
-        app.MapDelete("api/v1/pokemon/{id}", async (IPokemonRepo repo, int id) =>
-        {
-            var pokemonModel = await repo.GetPokemonAsync(id);
-            if (pokemonModel == null)
-                return Results.NotFound();
-
-            await repo.DeletePokemonAsync(pokemonModel);
-            return Results.NoContent();
-        });
+        //DELETE
+        app.MapDelete("api/v1/pokemon/{id}", DeletePokemon);
     }
 
     public static async Task<IResult> GetAllPokemon(IPokemonRepo repo, IMapper mapper)
@@ -69,6 +49,56 @@ public static class Api
             var pokemonDTO = mapper.Map<PokemonReadDTO>(pokemonModel);
 
             return Results.Ok(pokemonDTO);
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(e.Message);
+        }
+    }
+
+    public static async Task<IResult> CreatePokemon(IPokemonRepo repo, PokemonCreateDTO pokemonCreateDTO, IMapper mapper)
+    {
+        try
+        {
+            var pokemonModel = mapper.Map<Pokemon>(pokemonCreateDTO);
+            await repo.CreatePokemonAsync(pokemonModel);
+            return Results.Created($"api/v1/pokemon/{pokemonModel.Id}", mapper.Map<PokemonReadDTO>(pokemonModel));
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(e.Message);
+        }
+    }
+
+    public static async Task<IResult> UpdatePokemon(IPokemonRepo repo, int id, PokemonUpdateDTO pokemonUpdateDTO, IMapper mapper)
+    {
+        try
+        {
+            var pokemonModel = await repo.GetPokemonAsync(id);
+            if (pokemonModel == null)
+                return Results.NotFound();
+
+            mapper.Map(pokemonUpdateDTO, pokemonModel);
+
+            await repo.UpdatePokemonAsync(id, pokemonModel);
+            return Results.NoContent();
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(e.Message);
+        }
+    }
+
+    public static async Task<IResult> DeletePokemon(IPokemonRepo repo, int id)
+    {
+        try
+        {
+            var pokemonModel = await repo.GetPokemonAsync(id);
+            if (pokemonModel == null)
+                return Results.NotFound();
+
+            await repo.DeletePokemonAsync(pokemonModel);
+            return Results.NoContent();
         }
         catch (Exception e)
         {
